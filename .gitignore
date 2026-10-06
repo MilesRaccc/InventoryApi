@@ -71,3 +71,5 @@ Migrations/
 # Rider / JetBrains
 .idea/
 *.sln.iml
+
+appsettings.json
