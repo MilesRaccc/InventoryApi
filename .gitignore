@@ -73,3 +73,5 @@ Migrations/
 *.sln.iml
 
 appsettings.json
+
+appsettings.Development.json
