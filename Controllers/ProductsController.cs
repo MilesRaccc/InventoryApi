@@ -1,9 +1,11 @@
 ﻿using InventoryApi.Data;
 using InventoryApi.Dtos.Product;
+using InventoryApi.Helpers;
 using InventoryApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace InventoryApi.Controllers
 {
@@ -46,18 +48,66 @@ namespace InventoryApi.Controllers
         #region API Methods
 
         [HttpGet]
-        public async Task<IActionResult> Get(string? search)
+        public async Task<IActionResult> Get([FromQuery] ProductQueryParameters parameters)
         {
             var query = _context.Products.AsQueryable();
 
-            if (!string.IsNullOrWhiteSpace(search))
+            //Filtration
+            if (!string.IsNullOrWhiteSpace(parameters.Search))
             {
-                query = query.Where(x => EF.Functions.ILike(x.Name, $"%{search}%"));
+                query = query.Where(x => EF.Functions.ILike(x.Name, $"%{parameters.Search}%"));
             }
 
-            var products = await query.ToListAsync();
+            if(parameters.MinPrice.HasValue)
+            {
+                query = query.Where(x => x.Price >= parameters.MinPrice);
+            }
 
-            return Ok(products.Select(ToDto));
+            if (parameters.MaxPrice.HasValue)
+            {
+                query = query.Where(x => x.Price <= parameters.MaxPrice);
+            }
+
+            if (parameters.MinQuantity.HasValue)
+            {
+                query = query.Where(x => x.Quantity >= parameters.MinQuantity);
+            }
+
+            //Sorting
+            bool ascending = parameters.SortOrder == SortOrder.Asc;
+
+            switch (parameters.SortBy)
+            {
+                case ProductSortField.Id:
+                    query = ascending ? query.OrderBy(x => x.Id) : query.OrderByDescending(x => x.Id); 
+                    break;
+                case ProductSortField.Name:
+                    query = ascending ? query.OrderBy(x => x.Name) : query.OrderByDescending(x => x.Name);
+                    break;
+                case ProductSortField.Price:
+                    query = ascending ? query.OrderBy(x => x.Price) : query.OrderByDescending(x => x.Price);
+                    break;
+                case ProductSortField.Quantity:
+                    query = ascending ? query.OrderBy(x => x.Quantity) : query.OrderByDescending(x => x.Quantity);
+                    break;
+                case ProductSortField.CreatedAt:
+                    query = ascending ? query.OrderBy(x => x.CreatedAt) : query.OrderByDescending(x => x.CreatedAt);
+                    break;
+            }
+
+            //Building of response
+            var totalItems = await query.CountAsync();
+            var totalPages = (int)Math.Ceiling(totalItems / (double)parameters.PageSize);
+            var products = await query.Skip((parameters.Page - 1) * parameters.PageSize).Take(parameters.PageSize).ToListAsync();
+
+            return Ok(new PagedResult<ProductDto>
+            {
+                Items = products.Select(ToDto).ToList(),
+                Page = parameters.Page,
+                PageSize = parameters.PageSize,
+                TotalItems = totalItems,
+                TotalPages = totalPages
+            });
         }
 
         [HttpGet("{id}")]
