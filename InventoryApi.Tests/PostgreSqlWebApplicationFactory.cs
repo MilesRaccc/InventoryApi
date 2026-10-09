@@ -21,8 +21,9 @@ public class PostgreSqlWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices((context, services) =>
         {
-            var connectionString = context.Configuration
-                .GetConnectionString("PostgreSqlTest");
+            var connectionString =
+                context.Configuration.GetConnectionString("PostgreSqlTest")
+                ?? Environment.GetEnvironmentVariable("INVENTORYAPI_TEST_CONNECTION");
 
             if (string.IsNullOrWhiteSpace(connectionString))
             {
