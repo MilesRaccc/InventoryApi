@@ -56,8 +56,6 @@ CodeCoverage/
 TestResult.xml
 nunit-*.xml
 
-Migrations/
-
 # Visual Studio
 .vs/
 *.user

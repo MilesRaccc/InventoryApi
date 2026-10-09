@@ -19,6 +19,12 @@ public class PostgreSqlSearchTests
         using (var scope = factory.Services.CreateScope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var migrations = db.Database.GetMigrations();
+
+            Assert.Contains(
+                migrations,
+                migration => migration.EndsWith("_InitialCreate"));
+
             await db.Database.MigrateAsync();
 
             db.Products.RemoveRange(await db.Products.ToListAsync());
