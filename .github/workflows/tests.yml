@@ -1,0 +1,45 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: inventoryapi_test
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpassword
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U testuser -d inventoryapi_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      INVENTORYAPI_TEST_CONNECTION: Host=localhost;Port=5432;Database=inventoryapi_test;Username=testuser;Password=testpassword
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore InventoryApi.sln
+
+      - name: Build solution
+        run: dotnet build InventoryApi.sln --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test InventoryApi.sln --no-build --configuration Release

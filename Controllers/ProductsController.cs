@@ -144,7 +144,7 @@ namespace InventoryApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, CreateProductDto updateDto)
+        public async Task<IActionResult> Update(int id, UpdateProductDto updateDto)
         {
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
