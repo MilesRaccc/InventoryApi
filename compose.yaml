@@ -25,6 +25,7 @@ services:
       db:
         condition: service_healthy
     environment:
+      Database__ApplyMigrationsOnStartup: "true"
       ASPNETCORE_ENVIRONMENT: Development
       ASPNETCORE_HTTP_PORTS: 8080
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"

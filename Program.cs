@@ -23,7 +23,8 @@ builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Configuration.GetValue<bool>(
+        "Database:ApplyMigrationsOnStartup"))
 {
     using var scope = app.Services.CreateScope();
 
