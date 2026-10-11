@@ -43,3 +43,6 @@ jobs:
 
       - name: Run tests
         run: dotnet test InventoryApi.sln --no-build --configuration Release
+
+      - name: Build Docker image
+        run: docker build --tag inventoryapi:ci .
