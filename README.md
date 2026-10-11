@@ -55,8 +55,6 @@ Copy-Item .env.example .env
 
 Open `.env` and configure the PostgreSQL database name, username, and password.
 
-Do not commit `.env` or store real credentials in source control.
-
 ### 3. Start the application
 
 From the repository root, run:
