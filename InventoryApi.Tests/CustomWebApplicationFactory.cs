@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Hosting;
 
 namespace InventoryApi.Tests;
 
@@ -27,6 +29,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        builder.UseSetting("Database:ApplyMigrationsOnStartup", "false");
+
         builder.ConfigureLogging(logging =>
         {
             logging.ClearProviders();
@@ -78,6 +82,17 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 "Bearer", token);
 
         return client;
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var host = base.CreateHost(builder);
+
+        using var scope = host.Services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Database.EnsureCreated();
+
+        return host;
     }
 
     protected override void Dispose(bool disposing)

@@ -1,10 +1,13 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using InventoryApi.Data;
-using Microsoft.EntityFrameworkCore;
-using System.Text.Json.Serialization;
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json.Serialization;
+using InventoryApi.Data;
+using InventoryApi.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using InventoryApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,6 +55,27 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddOpenApi();
 
 //Authorization
+builder.Services
+    .AddIdentityCore<ApplicationUser>(options =>
+    {
+        options.User.RequireUniqueEmail = true;
+
+        options.Password.RequiredLength = 8;
+        options.Password.RequireDigit = true;
+        options.Password.RequireUppercase = true;
+        options.Password.RequireLowercase = true;
+        options.Password.RequireNonAlphanumeric = false;
+
+        options.Lockout.AllowedForNewUsers = true;
+        options.Lockout.MaxFailedAccessAttempts = 5;
+        options.Lockout.DefaultLockoutTimeSpan =
+            TimeSpan.FromMinutes(15);
+    })
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders()
+    .AddSignInManager();
+
 var jwtIssuer = builder.Configuration["Jwt:Issuer"]
     ?? throw new InvalidOperationException("JWT issuer is not configured.");
 
@@ -108,6 +132,7 @@ builder.Services
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<JwtTokenService>();
 
 var app = builder.Build();
 
@@ -120,6 +145,8 @@ if (app.Configuration.GetValue<bool>(
         .GetRequiredService<AppDbContext>();
 
     db.Database.Migrate();
+
+    await IdentitySeeder.SeedRolesAsync(scope.ServiceProvider);
 }
 
 app.UseExceptionHandler();
