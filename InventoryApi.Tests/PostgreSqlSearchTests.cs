@@ -31,7 +31,7 @@ public class PostgreSqlSearchTests
             await db.SaveChangesAsync();
         }
 
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         var keyboard = new CreateProductDto
         {

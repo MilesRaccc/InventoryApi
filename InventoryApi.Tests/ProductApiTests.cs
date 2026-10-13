@@ -18,7 +18,7 @@ public class ProductsApiTests
     public async Task GetProducts_ReturnsOk()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -35,7 +35,7 @@ public class ProductsApiTests
     public async Task GetProduct_WithNonexistentId_ReturnsNotFound()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -53,7 +53,7 @@ public class ProductsApiTests
     public async Task GetProducts_WithPageSize_ReturnsRequestedNumberOfProducts()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -96,7 +96,7 @@ public class ProductsApiTests
     public async Task GetProducts_SecondPage_ReturnsRemainingProduct()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -138,7 +138,7 @@ public class ProductsApiTests
     public async Task GetProducts_WithPageSizeAboveLimit_ReturnsBadRequest()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -160,7 +160,7 @@ public class ProductsApiTests
     public async Task GetProducts_SortByPriceAscending_ReturnsProductsInOrder()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -203,7 +203,7 @@ public class ProductsApiTests
     public async Task GetProducts_SortByQuantityDescending_ReturnsProductsInOrder()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -250,7 +250,7 @@ public class ProductsApiTests
     public async Task GetProducts_WithPriceRange_ReturnsMatchingProducts()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -292,7 +292,7 @@ public class ProductsApiTests
     public async Task GetProducts_WithMinQuantity_ReturnsMatchingProducts()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -336,7 +336,7 @@ public class ProductsApiTests
     public async Task GetProducts_WithMinPriceGreaterThanMaxPrice_ReturnsBadRequest()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -360,7 +360,7 @@ public class ProductsApiTests
     public async Task CreateProduct_WithValidData_ReturnsCreated()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -386,7 +386,7 @@ public class ProductsApiTests
     public async Task CreateProduct_WithNegativePrice_ReturnsBadRequest()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -412,7 +412,7 @@ public class ProductsApiTests
     public async Task CreateProduct_ReturnsCreatedProduct()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -453,7 +453,7 @@ public class ProductsApiTests
     public async Task CreateProduct_ThenGetById_ReturnsSameProduct()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -503,7 +503,7 @@ public class ProductsApiTests
     public async Task UpdateProduct_WithValidData_UpdatesProduct()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -563,7 +563,7 @@ public class ProductsApiTests
     public async Task UpdateProduct_WithNonexistentId_ReturnsNotFound()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -593,7 +593,7 @@ public class ProductsApiTests
     public async Task DeleteProduct_RemovesProduct()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
@@ -634,7 +634,7 @@ public class ProductsApiTests
     public async Task DeleteProduct_WithNonexistentId_ReturnsNotFound()
     {
         using var factory = new CustomWebApplicationFactory();
-        using var client = factory.CreateClient();
+        using var client = factory.CreateAuthenticatedClient();
 
         using (var scope = factory.Services.CreateScope())
         {
