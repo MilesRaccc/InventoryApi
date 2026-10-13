@@ -144,9 +144,12 @@ This helps verify both application behavior and Docker build compatibility in a 
 InventoryApi/
 ├── Controllers/
 ├── Data/
+├── Dtos/Product
+├── Helpers
 ├── Models/
 ├── Migrations/
 ├── InventoryApi.Tests/
+├── Properties
 ├── .github/
 │   └── workflows/
 │       └── tests.yml
@@ -155,7 +158,9 @@ InventoryApi/
 ├── .dockerignore
 ├── .env.example
 ├── InventoryApi.csproj
+├── InventoryApi.http
 ├── InventoryApi.sln
+├── appsettings.json
 └── Program.cs
 ```
 
