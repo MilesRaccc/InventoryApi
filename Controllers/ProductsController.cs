@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
+using System.Text.Json;
 
 namespace InventoryApi.Controllers
 {
@@ -44,6 +46,29 @@ namespace InventoryApi.Controllers
                 Quantity = product.Quantity,
                 CreatedAt = product.CreatedAt
             };
+        }
+
+        private void AddChangeHistory(
+            Product product,
+            ProductChangeAction action,
+            object? oldValues,
+            object? newValues)
+        {
+            _context.ProductChangeHistory.Add(new ProductChangeHistory
+            {
+                ProductId = product.Id,
+                ProductName = product.Name,
+                Action = action,
+                ChangedAt = DateTimeOffset.UtcNow,
+                ChangedBy = User.FindFirstValue(ClaimTypes.NameIdentifier)
+                    ?? User.FindFirstValue("sub"),
+                OldValues = oldValues is null
+                    ? null
+                    : JsonSerializer.Serialize(oldValues),
+                NewValues = newValues is null
+                    ? null
+                    : JsonSerializer.Serialize(newValues)
+            });
         }
 
         #endregion
@@ -136,9 +161,16 @@ namespace InventoryApi.Controllers
                 Price = creationDto.Price,
                 Quantity = creationDto.Quantity,
                 CreatedAt = DateTime.UtcNow
-            };
+            };            
 
             _context.Products.Add(product);
+
+            AddChangeHistory(
+                product,
+                ProductChangeAction.Created,
+                oldValues: null,
+                newValues: ToDto(product));
+
             await _context.SaveChangesAsync();
 
             var returnDto = ToDto(product);
