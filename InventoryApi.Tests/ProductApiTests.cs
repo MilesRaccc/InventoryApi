@@ -43,7 +43,7 @@ public class ProductsApiTests
             db.Database.EnsureCreated();
         }
 
-        var response = await client.GetAsync("/api/products/999999");
+        var response = await client.GetAsync("/api/products/" + Guid.NewGuid().ToString());
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -437,7 +437,7 @@ public class ProductsApiTests
             .ReadFromJsonAsync<JsonElement>();
 
         Assert.True(createdProduct.TryGetProperty("id", out var id));
-        Assert.True(id.GetInt32() > 0);
+        Assert.True(Guid.TryParse(id.ToString(), out var guidId));
 
         Assert.Equal("Test mouse",
             createdProduct.GetProperty("name").GetString());
@@ -477,7 +477,9 @@ public class ProductsApiTests
         var createdProduct = await createResponse.Content
             .ReadFromJsonAsync<JsonElement>();
 
-        var id = createdProduct.GetProperty("id").GetInt32();
+        var id = Guid.Parse(
+            createdProduct.GetProperty("id").GetString()!
+        );
 
         var getResponse = await client.GetAsync($"/api/products/{id}");
 
@@ -486,7 +488,7 @@ public class ProductsApiTests
         var retrievedProduct = await getResponse.Content
             .ReadFromJsonAsync<JsonElement>();
 
-        Assert.Equal(id, retrievedProduct.GetProperty("id").GetInt32());
+        Assert.Equal(id, Guid.Parse(retrievedProduct.GetProperty("id").GetString()!));
         Assert.Equal("Test monitor",
             retrievedProduct.GetProperty("name").GetString());
         Assert.Equal(199.99m,
@@ -527,7 +529,7 @@ public class ProductsApiTests
         var createdProduct = await createResponse.Content
             .ReadFromJsonAsync<JsonElement>();
 
-        var id = createdProduct.GetProperty("id").GetInt32();
+        var id = Guid.Parse(createdProduct.GetProperty("id").GetString()!);
 
         var updatedProduct = new
         {
@@ -580,7 +582,7 @@ public class ProductsApiTests
         };
 
         var response = await client.PutAsJsonAsync(
-            "/api/products/999999", updatedProduct);
+            "/api/products/" + Guid.NewGuid().ToString(), updatedProduct);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -617,7 +619,7 @@ public class ProductsApiTests
         var createdProduct = await createResponse.Content
             .ReadFromJsonAsync<JsonElement>();
 
-        var id = createdProduct.GetProperty("id").GetInt32();
+        var id = Guid.Parse(createdProduct.GetProperty("id").GetString()!);
 
         var deleteResponse = await client.DeleteAsync(
             $"/api/products/{id}");
@@ -642,7 +644,7 @@ public class ProductsApiTests
             db.Database.EnsureCreated();
         }
 
-        var response = await client.DeleteAsync("/api/products/999999");
+        var response = await client.DeleteAsync("/api/products/" + Guid.NewGuid().ToString());
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }

@@ -114,7 +114,7 @@ namespace InventoryApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
+        public async Task<IActionResult> GetById(Guid id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -147,7 +147,7 @@ namespace InventoryApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, UpdateProductDto updateDto)
+        public async Task<IActionResult> Update(Guid id, UpdateProductDto updateDto)
         {
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 
@@ -167,7 +167,7 @@ namespace InventoryApi.Controllers
         }
 
         [HttpPost("{id}/stock-adjustments")]
-        public async Task<IActionResult> AdjustStock(int id, [FromQuery]AdjustStockDto adjustDto)
+        public async Task<IActionResult> AdjustStock(Guid id, [FromQuery]AdjustStockDto adjustDto)
         {
             var product = await _context.Products
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -194,7 +194,7 @@ namespace InventoryApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             var product = await _context.Products.FirstOrDefaultAsync(x => x.Id == id);
 

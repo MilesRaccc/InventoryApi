@@ -14,4 +14,5 @@ public class AppDbContext
     }
 
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductChangeHistory> ProductChangeHistory { get; set; }
 }
