@@ -1,14 +1,17 @@
-﻿using InventoryApi.Data;
+﻿using System.Linq.Expressions;
+using InventoryApi.Data;
 using InventoryApi.Dtos.Product;
+using InventoryApi.DTOs;
 using InventoryApi.Helpers;
 using InventoryApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 
 namespace InventoryApi.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ProductsController : ControllerBase
@@ -157,6 +160,33 @@ namespace InventoryApi.Controllers
             product.Description = updateDto.Description;
             product.Price = updateDto.Price;
             product.Quantity = updateDto.Quantity;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(ToDto(product));
+        }
+
+        [HttpPost("{id}/stock-adjustments")]
+        public async Task<IActionResult> AdjustStock(int id, [FromQuery]AdjustStockDto adjustDto)
+        {
+            var product = await _context.Products
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var newQuantity = (long)product.Quantity
+                + adjustDto.QuantityChange;
+
+            if (newQuantity < 0 || newQuantity > int.MaxValue)
+            {
+                return BadRequest(
+                    "The resulting quantity is outside the allowed range.");
+            }
+
+            product.Quantity = (int)newQuantity;
 
             await _context.SaveChangesAsync();
 
